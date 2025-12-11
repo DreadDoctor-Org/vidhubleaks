@@ -1,14 +1,46 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Header } from '@/components/layout/Header';
+import { VideoGrid } from '@/components/videos/VideoGrid';
+import { useVideos } from '@/hooks/useVideos';
+import { useCategories } from '@/hooks/useCategories';
+import { Badge } from '@/components/ui/badge';
+import { Link } from 'react-router-dom';
 
-const Index = () => {
+export default function Index() {
+  const { data: videos, isLoading } = useVideos('published');
+  const { data: categories } = useCategories();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="container px-4 py-8">
+        <section className="mb-12 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Welcome to <span className="text-gradient">VidHub</span>
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Discover and share amazing videos from creators around the world
+          </p>
+        </section>
+
+        {categories && categories.length > 0 && (
+          <section className="mb-8">
+            <div className="flex flex-wrap gap-2 justify-center">
+              {categories.filter(c => c.is_active).slice(0, 10).map((category) => (
+                <Link key={category.id} to={`/category/${category.slug}`}>
+                  <Badge variant="secondary" className="px-4 py-2 text-sm cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors">
+                    {category.name}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold mb-6">Latest Videos</h2>
+          <VideoGrid videos={videos} isLoading={isLoading} />
+        </section>
+      </main>
     </div>
   );
-};
-
-export default Index;
+}
