@@ -9,8 +9,8 @@ export function useVideos(status?: string) {
         .from('videos')
         .select(`
           *,
-          profiles:user_id (username, display_name, avatar_url),
-          categories:category_id (name, slug)
+          profiles!videos_user_id_profiles_fkey (username, display_name, avatar_url),
+          categories (name, slug)
         `)
         .order('created_at', { ascending: false });
       
@@ -33,8 +33,8 @@ export function useVideo(id: string) {
         .from('videos')
         .select(`
           *,
-          profiles:user_id (username, display_name, avatar_url),
-          categories:category_id (name, slug),
+          profiles!videos_user_id_profiles_fkey (username, display_name, avatar_url),
+          categories (name, slug),
           video_files (*)
         `)
         .eq('id', id)
