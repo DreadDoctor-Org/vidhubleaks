@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Lock, Camera, Loader2 } from 'lucide-react';
+import { User, Lock, Camera, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Profile {
@@ -117,7 +117,7 @@ export default function Settings() {
       if (error) throw error;
 
       toast.success('Profile updated successfully');
-      fetchProfile();
+      navigate(-1);
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Failed to update profile');
@@ -176,7 +176,12 @@ export default function Settings() {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container max-w-2xl px-4 py-8">
-        <h1 className="text-3xl font-bold text-foreground mb-8">Account Settings</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-foreground">Account Settings</h1>
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
