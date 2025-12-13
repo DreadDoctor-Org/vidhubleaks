@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,6 +15,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function Header() {
   const { user, signOut, isAdmin, isModerator } = useAuth();
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border glass">
@@ -26,24 +36,23 @@ export function Header() {
             <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Home
             </Link>
-            <Link to="/categories" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Categories
-            </Link>
-            <Link to="/trending" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Trending
+            <Link to="/search" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Browse
             </Link>
           </nav>
         </div>
 
-        <div className="flex-1 max-w-md mx-4">
+        <form onSubmit={handleSearch} className="flex-1 max-w-md mx-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search videos..." 
               className="pl-10 bg-input border-border"
             />
           </div>
-        </div>
+        </form>
 
         <div className="flex items-center gap-3">
           {user ? (
@@ -73,9 +82,9 @@ export function Header() {
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/profile" className="flex items-center">
+                    <Link to="/settings" className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      Profile
+                      Account Settings
                     </Link>
                   </DropdownMenuItem>
                   {(isAdmin || isModerator) && (
