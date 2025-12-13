@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -18,7 +19,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Upload as UploadIcon, Video, X, Loader2 } from 'lucide-react';
+import { Upload as UploadIcon, Video, X, Loader2, Tag, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Upload() {
@@ -26,6 +27,7 @@ export default function Upload() {
   const navigate = useNavigate();
   const createVideo = useCreateVideo();
   const { data: categories } = useCategories();
+  const videoInputRef = useRef<HTMLVideoElement>(null);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -34,14 +36,27 @@ export default function Upload() {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  
+  // Tags
+  const [tagInput, setTagInput] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [existingTags, setExistingTags] = useState<{ id: string; name: string; slug: string }[]>([]);
+
+  // Fetch existing tags on mount
+  useState(() => {
+    supabase.from('tags').select('*').order('name').then(({ data }) => {
+      if (data) setExistingTags(data);
+    });
+  });
 
   if (!user) {
     navigate('/login');
     return null;
   }
 
-  const generateSlug = (title: string) => {
-    return title
+  const generateSlug = (text: string) => {
+    return text
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '') + '-' + Date.now().toString(36);
@@ -55,6 +70,15 @@ export default function Upload() {
         return;
       }
       setVideoFile(file);
+      
+      // Extract duration
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        setDuration(Math.round(video.duration));
+        URL.revokeObjectURL(video.src);
+      };
+      video.src = URL.createObjectURL(file);
     }
   };
 
@@ -66,6 +90,25 @@ export default function Upload() {
         return;
       }
       setThumbnailFile(file);
+    }
+  };
+
+  const addTag = (tagName: string) => {
+    const trimmed = tagName.trim().toLowerCase();
+    if (trimmed && !selectedTags.includes(trimmed) && selectedTags.length < 10) {
+      setSelectedTags([...selectedTags, trimmed]);
+      setTagInput('');
+    }
+  };
+
+  const removeTag = (tag: string) => {
+    setSelectedTags(selectedTags.filter((t) => t !== tag));
+  };
+
+  const handleTagKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      addTag(tagInput);
     }
   };
 
@@ -105,27 +148,57 @@ export default function Upload() {
         const { data: thumbUrlData } = supabase.storage.from('thumbnails').getPublicUrl(thumbnailPath);
         thumbnailUrl = thumbUrlData.publicUrl;
       }
-      setProgress(75);
+      setProgress(70);
 
       // Create video record
-      await createVideo.mutateAsync({
+      const videoRecord = await createVideo.mutateAsync({
         user_id: user.id,
         title,
         description,
         slug: generateSlug(title),
         thumbnail_url: thumbnailUrl,
         category_id: categoryId || null,
+        duration,
         status: 'pending',
       });
 
-      // Create video file record
+      setProgress(80);
+
+      // Create video file record with the correct video_id
       await supabase.from('video_files').insert({
-        video_id: createVideo.data?.id,
+        video_id: videoRecord.id,
         resolution: 'original',
         file_url: videoUrlData.publicUrl,
         file_size: videoFile.size,
         is_original: true,
       });
+
+      setProgress(90);
+
+      // Handle tags
+      for (const tagName of selectedTags) {
+        // Check if tag exists
+        let tag = existingTags.find((t) => t.name.toLowerCase() === tagName);
+        
+        if (!tag) {
+          // Create new tag
+          const { data: newTag } = await supabase
+            .from('tags')
+            .insert({ name: tagName, slug: generateSlug(tagName) })
+            .select()
+            .single();
+          
+          if (newTag) tag = newTag;
+        }
+
+        if (tag) {
+          // Link tag to video
+          await supabase.from('video_tags').insert({
+            video_id: videoRecord.id,
+            tag_id: tag.id,
+          });
+        }
+      }
 
       setProgress(100);
       toast.success('Video uploaded successfully! It will be reviewed shortly.');
@@ -254,6 +327,49 @@ export default function Upload() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Tags */}
+              <div className="space-y-2">
+                <Label>Tags (for SEO & search)</Label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {selectedTags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="gap-1">
+                      <Tag className="h-3 w-3" />
+                      {tag}
+                      <X className="h-3 w-3 cursor-pointer" onClick={() => removeTag(tag)} />
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleTagKeyDown}
+                    placeholder="Add tags (press Enter)"
+                    disabled={selectedTags.length >= 10}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => addTag(tagInput)}
+                    disabled={!tagInput.trim() || selectedTags.length >= 10}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Add up to 10 tags to help users find your video
+                </p>
+              </div>
+
+              {/* Duration Display */}
+              {duration > 0 && (
+                <div className="p-3 rounded-lg bg-muted">
+                  <p className="text-sm text-muted-foreground">
+                    Video Duration: {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
+                  </p>
+                </div>
+              )}
 
               {/* Progress */}
               {uploading && (
