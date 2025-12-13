@@ -146,8 +146,10 @@ export default function Video() {
     );
   }
 
+  // Find video file - prefer original, then any available file
   const videoFile = video.video_files?.find((f: any) => f.is_original) || video.video_files?.[0];
   const profile = video.profiles;
+  const hasVideoFile = videoFile?.file_url;
 
   return (
     <div className="min-h-screen bg-background">
@@ -158,7 +160,7 @@ export default function Video() {
           <div className="lg:col-span-2 space-y-6">
             {/* Player Container */}
             <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-              {videoFile?.file_url ? (
+              {hasVideoFile ? (
                 <video
                   ref={videoRef}
                   controls
@@ -173,7 +175,8 @@ export default function Video() {
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
                     <Play className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">Video file not available</p>
+                    <p className="text-muted-foreground">Video is being processed</p>
+                    <p className="text-sm text-muted-foreground mt-2">Please check back later</p>
                   </div>
                 </div>
               )}

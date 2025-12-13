@@ -33,8 +33,8 @@ export function VideoCard({
 }: VideoCardProps) {
   return (
     <Link to={`/video/${id}`}>
-      <Card className="group overflow-hidden border-border bg-card hover:border-primary/50 transition-all duration-300">
-        <div className="relative aspect-video overflow-hidden">
+      <Card className="group overflow-hidden border-border bg-card hover:border-primary/50 transition-all duration-300 h-full flex flex-col">
+        <div className="relative aspect-video overflow-hidden flex-shrink-0">
           {thumbnailUrl ? (
             <img
               src={thumbnailUrl}
@@ -57,22 +57,22 @@ export function VideoCard({
             </div>
           </div>
         </div>
-        <CardContent className="p-3">
-          <h3 className="font-medium line-clamp-2 text-sm mb-2 group-hover:text-primary transition-colors">
+        <CardContent className="p-3 flex-1 flex flex-col">
+          <h3 className="font-medium line-clamp-1 text-sm mb-2 group-hover:text-primary transition-colors" title={title}>
             {title}
           </h3>
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{username}</span>
+          <div className="flex items-center justify-between text-xs text-muted-foreground mt-auto">
+            <span className="truncate max-w-[80px]">{username}</span>
             <div className="flex items-center gap-2">
               <span className="flex items-center gap-1">
                 <Eye className="h-3 w-3" />
                 {viewsCount.toLocaleString()}
               </span>
-              <span>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</span>
+              <span className="whitespace-nowrap">{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</span>
             </div>
           </div>
           {categoryName && (
-            <Badge variant="secondary" className="mt-2 text-xs">
+            <Badge variant="secondary" className="mt-2 text-xs w-fit">
               {categoryName}
             </Badge>
           )}

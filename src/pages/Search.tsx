@@ -158,12 +158,12 @@ export default function Search() {
 
           {/* Filters */}
           <div className="flex flex-wrap gap-3">
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select value={selectedCategory || "all"} onValueChange={(v) => setSelectedCategory(v === "all" ? "" : v)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="all">All Categories</SelectItem>
                 {categories?.filter((c) => c.is_active).map((category) => (
                   <SelectItem key={category.id} value={category.slug}>
                     {category.name}
@@ -172,12 +172,12 @@ export default function Search() {
               </SelectContent>
             </Select>
 
-            <Select value={selectedTag} onValueChange={setSelectedTag}>
+            <Select value={selectedTag || "all"} onValueChange={(v) => setSelectedTag(v === "all" ? "" : v)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="All Tags" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Tags</SelectItem>
+                <SelectItem value="all">All Tags</SelectItem>
                 {tags.map((tag) => (
                   <SelectItem key={tag.id} value={tag.slug}>
                     {tag.name}
