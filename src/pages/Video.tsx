@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Header } from '@/components/layout/Header';
 import { useVideo } from '@/hooks/useVideos';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
+import { BannerAd728, NativeBannerAd, SidebarAd1, SidebarAd2 } from '@/components/ads';
 
 function formatDuration(seconds: number) {
   const hours = Math.floor(seconds / 3600);
@@ -118,11 +120,13 @@ export default function Video() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
+        <BannerAd728 />
         <main className="container px-4 py-8">
           <Skeleton className="w-full aspect-video rounded-lg mb-6" />
           <Skeleton className="h-8 w-2/3 mb-4" />
           <Skeleton className="h-4 w-1/3" />
         </main>
+        <BannerAd728 />
       </div>
     );
   }
@@ -131,6 +135,7 @@ export default function Video() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
+        <BannerAd728 />
         <main className="container px-4 py-8">
           <div className="text-center py-16">
             <h1 className="text-2xl font-bold text-foreground mb-4">Video Not Found</h1>
@@ -142,6 +147,7 @@ export default function Video() {
             </Button>
           </div>
         </main>
+        <BannerAd728 />
       </div>
     );
   }
@@ -151,9 +157,32 @@ export default function Video() {
   const profile = video.profiles;
   const hasVideoFile = videoFile?.file_url;
 
+  const pageTitle = `${video.title} - Vid Hub`;
+  const pageDescription = video.description || `Watch ${video.title} on Vid Hub`;
+  const thumbnailUrl = video.thumbnail_url || '';
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Dynamic Meta Tags for SEO and Twitter/X sharing */}
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={video.title} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:type" content="video.other" />
+        <meta property="og:image" content={thumbnailUrl} />
+        <meta property="og:url" content={window.location.href} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={video.title} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={thumbnailUrl} />
+      </Helmet>
+
       <Header />
+      
+      {/* Top Banner Ad */}
+      <BannerAd728 />
+      
       <main className="container px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Video Player */}
@@ -265,16 +294,28 @@ export default function Video() {
                   <p className="text-foreground whitespace-pre-wrap">{video.description}</p>
                 </div>
               )}
+
+              {/* Native Banner Ad below video */}
+              <NativeBannerAd />
             </div>
           </div>
 
-          {/* Sidebar - Related Videos placeholder */}
+          {/* Sidebar */}
           <div className="space-y-4">
+            {/* Sidebar Ad 1 */}
+            <SidebarAd1 />
+            
             <h3 className="font-semibold text-foreground">Related Videos</h3>
             <p className="text-sm text-muted-foreground">Coming soon...</p>
+            
+            {/* Sidebar Ad 2 */}
+            <SidebarAd2 />
           </div>
         </div>
       </main>
+
+      {/* Bottom Banner Ad */}
+      <BannerAd728 />
     </div>
   );
 }

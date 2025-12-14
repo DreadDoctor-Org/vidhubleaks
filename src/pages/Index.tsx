@@ -4,14 +4,27 @@ import { useVideos } from '@/hooks/useVideos';
 import { useCategories } from '@/hooks/useCategories';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
+import { BannerAd728, BannerAd320, NativeBannerAd } from '@/components/ads';
 
 export default function Index() {
   const { data: videos, isLoading } = useVideos('published');
   const { data: categories } = useCategories();
 
+  // Split videos for ad insertion
+  const videosArray = videos || [];
+  const firstBatch = videosArray.slice(0, 4);
+  const secondBatch = videosArray.slice(4);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      
+      {/* Top Native Banner Ad */}
+      <NativeBannerAd />
+      
+      {/* Top 728x90 Banner Ad */}
+      <BannerAd728 />
+      
       <main className="container px-4 py-8">
         <section className="mb-12 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -38,9 +51,29 @@ export default function Index() {
 
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-6">Latest Videos</h2>
-          <VideoGrid videos={videos} isLoading={isLoading} />
+          
+          {/* First batch of videos */}
+          <VideoGrid videos={firstBatch} isLoading={isLoading} />
+          
+          {/* In-feed 320x50 Ad */}
+          {videosArray.length > 4 && (
+            <div className="my-6">
+              <BannerAd320 />
+            </div>
+          )}
+          
+          {/* Second batch of videos */}
+          {secondBatch.length > 0 && (
+            <VideoGrid videos={secondBatch} isLoading={false} />
+          )}
         </section>
       </main>
+
+      {/* Bottom Native Banner Ad */}
+      <NativeBannerAd />
+      
+      {/* Bottom 728x90 Banner Ad */}
+      <BannerAd728 />
     </div>
   );
 }
