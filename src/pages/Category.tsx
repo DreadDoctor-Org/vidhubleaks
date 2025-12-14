@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { BannerAd728 } from '@/components/ads';
 
 export default function Category() {
   const { slug } = useParams<{ slug: string }>();
@@ -47,6 +48,7 @@ export default function Category() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
+        <BannerAd728 />
         <main className="container px-4 py-8">
           <div className="text-center py-16">
             <h1 className="text-2xl font-bold text-foreground mb-4">Category Not Found</h1>
@@ -58,6 +60,7 @@ export default function Category() {
             </Button>
           </div>
         </main>
+        <BannerAd728 />
       </div>
     );
   }
@@ -65,6 +68,10 @@ export default function Category() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      
+      {/* Top Banner Ad */}
+      <BannerAd728 />
+      
       <main className="container px-4 py-8">
         <div className="mb-8">
           <Button asChild variant="ghost" className="mb-4 gap-2">
@@ -108,6 +115,9 @@ export default function Category() {
 
         <VideoGrid videos={videos} isLoading={loading} />
       </main>
+
+      {/* Bottom Banner Ad */}
+      <BannerAd728 />
     </div>
   );
 }
