@@ -19,9 +19,6 @@ export default function Index() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Top Native Banner Ad */}
-      <NativeBannerAd />
-      
       {/* Top 728x90 Banner Ad */}
       <BannerAd728 />
       
@@ -74,6 +71,9 @@ export default function Index() {
       
       {/* Bottom 728x90 Banner Ad */}
       <BannerAd728 />
+      
+      {/* Bottom Native Banner Ad */}
+      <NativeBannerAd />
     </div>
   );
 }

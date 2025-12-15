@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,7 +24,7 @@ import { toast } from 'sonner';
 import { BannerAd728 } from '@/components/ads';
 
 export default function Upload() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const createVideo = useCreateVideo();
   const { data: categories } = useCategories();
@@ -230,7 +230,7 @@ export default function Upload() {
       }
       setProgress(70);
 
-      // Create video record
+      // Create video record - auto-publish for admins
       const videoRecord = await createVideo.mutateAsync({
         user_id: user.id,
         title,
@@ -239,7 +239,8 @@ export default function Upload() {
         thumbnail_url: thumbnailUrl,
         category_id: categoryId || null,
         duration,
-        status: 'pending',
+        status: isAdmin ? 'published' : 'pending',
+        published_at: isAdmin ? new Date().toISOString() : null,
       });
 
       setProgress(80);
@@ -281,7 +282,7 @@ export default function Upload() {
       }
 
       setProgress(100);
-      toast.success('Video uploaded successfully! It will be reviewed shortly.');
+      toast.success(isAdmin ? 'Video uploaded and published!' : 'Video uploaded successfully! It will be reviewed shortly.');
       navigate('/');
     } catch (error) {
       console.error('Upload error:', error);
