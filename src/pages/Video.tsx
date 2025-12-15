@@ -159,7 +159,18 @@ export default function Video() {
 
   const pageTitle = `${video.title} - Vid Hub`;
   const pageDescription = video.description || `Watch ${video.title} on Vid Hub`;
-  const thumbnailUrl = video.thumbnail_url || '';
+  
+  // Ensure absolute URL for thumbnail (required for Twitter/X preview)
+  const getAbsoluteUrl = (url: string | null) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return `${window.location.origin}${url}`;
+  };
+  
+  const thumbnailUrl = getAbsoluteUrl(video.thumbnail_url);
+  const currentUrl = window.location.href;
 
   return (
     <div className="min-h-screen bg-background">
@@ -167,15 +178,22 @@ export default function Video() {
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
+        
+        {/* Open Graph */}
         <meta property="og:title" content={video.title} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="video.other" />
-        <meta property="og:image" content={thumbnailUrl} />
-        <meta property="og:url" content={window.location.href} />
+        <meta property="og:url" content={currentUrl} />
+        {thumbnailUrl && <meta property="og:image" content={thumbnailUrl} />}
+        {thumbnailUrl && <meta property="og:image:width" content="1280" />}
+        {thumbnailUrl && <meta property="og:image:height" content="720" />}
+        
+        {/* Twitter Card - Required for X preview */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={video.title} />
         <meta name="twitter:description" content={pageDescription} />
-        <meta name="twitter:image" content={thumbnailUrl} />
+        {thumbnailUrl && <meta name="twitter:image" content={thumbnailUrl} />}
+        <meta name="twitter:site" content="@TweetPrince12" />
       </Helmet>
 
       <Header />
