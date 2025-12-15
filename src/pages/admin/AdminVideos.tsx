@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { useVideos, useUpdateVideo, useDeleteVideo } from '@/hooks/useVideos';
+import { VideoEditDialog } from '@/components/admin/VideoEditDialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -28,7 +29,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MoreHorizontal, Check, X, Trash2, Eye } from 'lucide-react';
+import { MoreHorizontal, Check, X, Trash2, Eye, Edit, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -44,9 +45,16 @@ const statusColors: Record<string, string> = {
 export default function AdminVideos() {
   const [activeTab, setActiveTab] = useState('all');
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [editVideo, setEditVideo] = useState<any>(null);
   const { data: videos, isLoading } = useVideos(activeTab === 'all' ? undefined : activeTab);
   const updateVideo = useUpdateVideo();
   const deleteVideo = useDeleteVideo();
+
+  const handleShare = (video: any) => {
+    const shareUrl = `${window.location.origin}/video/${video.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast.success('Video link copied to clipboard!');
+  };
 
   const handleStatusChange = async (id: string, status: string) => {
     try {
@@ -150,6 +158,14 @@ export default function AdminVideos() {
                                 <Eye className="mr-2 h-4 w-4" />
                                 View
                               </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setEditVideo(video)}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleShare(video)}>
+                                <Share2 className="mr-2 h-4 w-4" />
+                                Share
+                              </DropdownMenuItem>
                               {video.status !== 'published' && (
                                 <DropdownMenuItem onClick={() => handleStatusChange(video.id, 'published')}>
                                   <Check className="mr-2 h-4 w-4" />
@@ -197,6 +213,13 @@ export default function AdminVideos() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Edit Video Dialog */}
+        <VideoEditDialog
+          video={editVideo}
+          open={!!editVideo}
+          onOpenChange={(open) => !open && setEditVideo(null)}
+        />
       </main>
     </div>
   );

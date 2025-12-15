@@ -20,6 +20,8 @@ import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminVideos from '@/pages/admin/AdminVideos';
 import AdminCategories from '@/pages/admin/AdminCategories';
 import AdminUsers from '@/pages/admin/AdminUsers';
+import AdminAnalytics from '@/pages/admin/AdminAnalytics';
+import AdminSettings from '@/pages/admin/AdminSettings';
 
 const queryClient = new QueryClient();
 
@@ -46,6 +48,8 @@ const App = () => (
               <Route path="/admin/videos" element={<ProtectedRoute requireModerator><AdminVideos /></ProtectedRoute>} />
               <Route path="/admin/categories" element={<ProtectedRoute requireAdmin><AdminCategories /></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute requireAdmin><AdminUsers /></ProtectedRoute>} />
+              <Route path="/admin/analytics" element={<ProtectedRoute requireAdmin><AdminAnalytics /></ProtectedRoute>} />
+              <Route path="/admin/settings" element={<ProtectedRoute requireAdmin><AdminSettings /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>

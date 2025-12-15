@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProfile } from '@/hooks/useProfile';
 import { Search, Upload, User, LogOut, Settings } from 'lucide-react';
 import {
   DropdownMenu,
@@ -15,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function Header() {
   const { user, signOut, isAdmin, isModerator } = useAuth();
+  const { data: profile } = useProfile();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -66,18 +68,24 @@ export function Header() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                     <Avatar className="h-9 w-9">
-                      <AvatarImage src="" alt={user.email ?? ''} />
+                      <AvatarImage src={profile?.avatar_url || ''} alt={profile?.display_name || user.email || ''} />
                       <AvatarFallback className="bg-primary text-primary-foreground">
-                        {user.email?.charAt(0).toUpperCase()}
+                        {profile?.display_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end">
                   <div className="flex items-center gap-2 p-2">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={profile?.avatar_url || ''} />
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {profile?.display_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">{user.email}</p>
-                      <p className="text-xs text-muted-foreground">Member</p>
+                      <p className="text-sm font-medium">{profile?.display_name || user.email}</p>
+                      <p className="text-xs text-muted-foreground">{isAdmin ? 'Administrator' : isModerator ? 'Moderator' : 'Member'}</p>
                     </div>
                   </div>
                   <DropdownMenuSeparator />
