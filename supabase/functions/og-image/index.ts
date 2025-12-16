@@ -7,7 +7,7 @@ const corsHeaders = {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders })
   }
 
   const url = new URL(req.url)
@@ -21,6 +21,8 @@ Deno.serve(async (req) => {
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   const supabase = createClient(supabaseUrl, supabaseKey)
 
+  console.log('Fetching video:', videoId)
+
   const { data: video, error } = await supabase
     .from('videos')
     .select('title, description, thumbnail_url')
@@ -28,44 +30,88 @@ Deno.serve(async (req) => {
     .single()
 
   if (error || !video) {
+    console.error('Video not found:', error)
     return new Response('Video not found', { status: 404, headers: corsHeaders })
   }
 
+  console.log('Video found:', video.title, 'Thumbnail:', video.thumbnail_url)
+
   const escapeHtml = (str: string) => {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+    if (!str) return ''
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
   }
 
+  const siteUrl = 'https://xdxcfhdfjpdpfqyxtnwc.lovableproject.com'
+  const siteName = 'Vid Hub'
   const title = escapeHtml(video.title || 'Vid Hub Video')
   const description = escapeHtml(video.description?.substring(0, 200) || 'Watch this video on Vid Hub')
-  const thumbnailUrl = video.thumbnail_url || ''
-  const siteUrl = 'https://xdxcfhdfjpdpfqyxtnwc.lovableproject.com'
   const videoUrl = `${siteUrl}/video/${videoId}`
+  
+  // Ensure thumbnail URL is absolute
+  let thumbnailUrl = video.thumbnail_url || ''
+  if (thumbnailUrl && !thumbnailUrl.startsWith('http')) {
+    thumbnailUrl = `${siteUrl}${thumbnailUrl}`
+  }
+
+  console.log('Final thumbnail URL:', thumbnailUrl)
 
   const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: https://ogp.me/ns#">
 <head>
   <meta charset="UTF-8">
-  <title>${title} - Vid Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Basic Meta -->
+  <title>${title} - ${siteName}</title>
   <meta name="description" content="${description}">
+  <link rel="canonical" href="${videoUrl}">
+  
+  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="video.other">
   <meta property="og:title" content="${title}">
+  <meta property="og:url" content="${videoUrl}">
   <meta property="og:description" content="${description}">
+  <meta property="og:site_name" content="${siteName}">
   <meta property="og:image" content="${thumbnailUrl}">
+  <meta property="og:image:secure_url" content="${thumbnailUrl}">
+  <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="720">
-  <meta property="og:url" content="${videoUrl}">
-  <meta property="og:site_name" content="Vid Hub">
+  <meta property="og:image:alt" content="${title}">
+  
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@TweetPrince12">
+  <meta name="twitter:creator" content="@TweetPrince12">
   <meta name="twitter:title" content="${title}">
   <meta name="twitter:description" content="${description}">
   <meta name="twitter:image" content="${thumbnailUrl}">
+  <meta name="twitter:image:src" content="${thumbnailUrl}">
+  <meta name="twitter:image:alt" content="${title}">
+  <meta name="twitter:domain" content="xdxcfhdfjpdpfqyxtnwc.lovableproject.com">
+  <meta name="twitter:url" content="${videoUrl}">
+  
+  <!-- Redirect -->
   <meta http-equiv="refresh" content="0;url=${videoUrl}">
 </head>
-<body><p>Redirecting...</p></body>
+<body style="font-family: system-ui, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #0a0a0a; color: #fff;">
+  <div style="text-align: center;">
+    <h1>${title}</h1>
+    <p>Redirecting to <a href="${videoUrl}" style="color: #8B5CF6;">Vid Hub</a>...</p>
+  </div>
+</body>
 </html>`
 
   return new Response(html, {
-    headers: { ...corsHeaders, 'Content-Type': 'text/html; charset=utf-8' },
+    headers: {
+      ...corsHeaders,
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600',
+    },
   })
 })
