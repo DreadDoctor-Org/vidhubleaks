@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ShareDialog } from '@/components/ShareDialog';
 import { 
   Play, 
   ThumbsUp, 
@@ -40,6 +41,7 @@ export default function Video() {
   const [likesCount, setLikesCount] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [tags, setTags] = useState<{ id: string; name: string; slug: string }[]>([]);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
   useEffect(() => {
     if (video) {
@@ -112,8 +114,7 @@ export default function Video() {
   };
 
   const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    toast.success('Link copied to clipboard!');
+    setShareDialogOpen(true);
   };
 
   if (isLoading) {
@@ -334,6 +335,14 @@ export default function Video() {
 
       {/* Bottom Banner Ad */}
       <BannerAd728 />
+
+      {/* Share Dialog */}
+      <ShareDialog
+        open={shareDialogOpen}
+        onOpenChange={setShareDialogOpen}
+        videoId={id || ''}
+        title={video?.title || 'Vid Hub Video'}
+      />
     </div>
   );
 }
