@@ -1,13 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, forwardRef } from 'react';
 
-export function BannerAd728() {
+export const BannerAd728 = forwardRef<HTMLDivElement>((_, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     // Clear any existing content
-    containerRef.current.innerHTML = '';
+    container.innerHTML = '';
 
     // Create the atOptions script
     const optionsScript = document.createElement('script');
@@ -21,24 +22,26 @@ export function BannerAd728() {
         'params' : {}
       };
     `;
-    containerRef.current.appendChild(optionsScript);
+    container.appendChild(optionsScript);
 
     // Create the invoke script
     const invokeScript = document.createElement('script');
     invokeScript.type = 'text/javascript';
     invokeScript.src = 'https://elegantimpose.com/1a513f6d9e3f2aef09a35d72ccfc06fb/invoke.js';
-    containerRef.current.appendChild(invokeScript);
+    container.appendChild(invokeScript);
 
     return () => {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
+      if (container) {
+        container.innerHTML = '';
       }
     };
   }, []);
 
   return (
-    <div className="w-full flex justify-center py-2">
+    <div ref={ref} className="w-full flex justify-center py-2">
       <div ref={containerRef} className="max-w-full overflow-hidden" />
     </div>
   );
-}
+});
+
+BannerAd728.displayName = 'BannerAd728';
