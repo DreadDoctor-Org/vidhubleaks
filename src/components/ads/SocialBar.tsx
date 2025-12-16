@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, forwardRef } from 'react';
 
-export function SocialBar() {
+export const SocialBar = forwardRef<HTMLDivElement>((_, ref) => {
   useEffect(() => {
     // Check if script already exists
     const existingScript = document.querySelector('script[src*="7338e69a06a3ba20c8eb64be8062563a.js"]');
@@ -17,5 +17,7 @@ export function SocialBar() {
     };
   }, []);
 
-  return null; // Social bar renders itself via the script
-}
+  return <div ref={ref} />; // Social bar renders itself via the script
+});
+
+SocialBar.displayName = 'SocialBar';
