@@ -91,12 +91,22 @@ export default function AdminSettings() {
       let avatarUrl = profile.avatar_url;
 
       if (avatarFile) {
-        const avatarPath = `${user.id}/${Date.now()}-avatar`;
+        const fileExt = avatarFile.name.split('.').pop();
+        const avatarPath = `${user.id}/${Date.now()}-avatar.${fileExt}`;
+        
         const { error: uploadError } = await supabase.storage
           .from('avatars')
-          .upload(avatarPath, avatarFile);
+          .upload(avatarPath, avatarFile, {
+            cacheControl: '3600',
+            upsert: true
+          });
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error('Avatar upload error:', uploadError);
+          toast.error('Failed to upload avatar');
+          setSaving(false);
+          return;
+        }
 
         const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(avatarPath);
         avatarUrl = urlData.publicUrl;
@@ -112,13 +122,18 @@ export default function AdminSettings() {
         })
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile update error:', error);
+        toast.error('Failed to update profile');
+        return;
+      }
 
+      setProfile(prev => prev ? { ...prev, avatar_url: avatarUrl } : null);
+      setAvatarFile(null);
       toast.success('Profile updated successfully');
-      fetchProfile();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating profile:', error);
-      toast.error('Failed to update profile');
+      toast.error(error.message || 'Failed to update profile');
     } finally {
       setSaving(false);
     }
