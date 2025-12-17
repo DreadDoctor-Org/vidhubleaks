@@ -24,8 +24,8 @@ export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogP
       name: 'X (Twitter)',
       icon: Twitter,
       color: 'bg-black hover:bg-black/80',
-      // Twitter needs the edge function URL for proper meta tag scraping
-      url: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
+      // X needs the edge function URL for proper meta tag scraping
+      url: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
     },
     {
       name: 'Facebook',
