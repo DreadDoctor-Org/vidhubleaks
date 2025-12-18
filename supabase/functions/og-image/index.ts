@@ -46,17 +46,41 @@ Deno.serve(async (req) => {
       .replace(/'/g, '&#39;')
   }
 
-  const siteUrl = 'https://xdxcfhdfjpdpfqyxtnwc.lovableproject.com'
+  const defaultSiteUrl = 'https://xdxcfhdfjpdpfqyxtnwc.lovableproject.com'
+  const siteParam = url.searchParams.get('site')
+  let siteUrl = defaultSiteUrl
+  if (siteParam) {
+    try {
+      const parsed = new URL(siteParam)
+      siteUrl = `${parsed.protocol}//${parsed.host}`
+    } catch {
+      // ignore invalid site param
+    }
+  }
+
   const siteName = 'Vid Hub'
   const title = escapeHtml(video.title || 'Vid Hub Video')
   const description = escapeHtml(video.description?.substring(0, 200) || 'Watch this video on Vid Hub')
   const videoUrl = `${siteUrl}/video/${videoId}`
-  
+  const twitterDomain = (() => {
+    try {
+      return new URL(siteUrl).hostname
+    } catch {
+      return 'xdxcfhdfjpdpfqyxtnwc.lovableproject.com'
+    }
+  })()
+
   // Ensure thumbnail URL is absolute
   let thumbnailUrl = video.thumbnail_url || ''
   if (thumbnailUrl && !thumbnailUrl.startsWith('http')) {
-    thumbnailUrl = `${siteUrl}${thumbnailUrl}`
+    if (thumbnailUrl.startsWith('/storage/')) {
+      thumbnailUrl = `${supabaseUrl}${thumbnailUrl}`
+    } else {
+      thumbnailUrl = `${siteUrl}${thumbnailUrl}`
+    }
   }
+
+  const ogImageType = thumbnailUrl.includes('.png') ? 'image/png' : 'image/jpeg'
 
   console.log('Final thumbnail URL:', thumbnailUrl)
 
@@ -79,7 +103,7 @@ Deno.serve(async (req) => {
   <meta property="og:site_name" content="${siteName}">
   <meta property="og:image" content="${thumbnailUrl}">
   <meta property="og:image:secure_url" content="${thumbnailUrl}">
-  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:type" content="${ogImageType}">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="720">
   <meta property="og:image:alt" content="${title}">
@@ -93,7 +117,7 @@ Deno.serve(async (req) => {
   <meta name="twitter:image" content="${thumbnailUrl}">
   <meta name="twitter:image:src" content="${thumbnailUrl}">
   <meta name="twitter:image:alt" content="${title}">
-  <meta name="twitter:domain" content="xdxcfhdfjpdpfqyxtnwc.lovableproject.com">
+  <meta name="twitter:domain" content="${twitterDomain}">
   <meta name="twitter:url" content="${videoUrl}">
   
   <!-- Redirect -->
