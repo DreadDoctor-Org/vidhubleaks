@@ -12,8 +12,8 @@ interface ShareDialogProps {
 }
 
 export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogProps) {
-  // Use edge function URL for platforms that need server-side meta tags (Twitter)
-  const edgeFunctionUrl = `https://xdxcfhdfjpdpfqyxtnwc.supabase.co/functions/v1/og-image?id=${videoId}`;
+  // Use backend function URL for platforms that need server-side meta tags (X/Twitter)
+  const edgeFunctionUrl = `https://xdxcfhdfjpdpfqyxtnwc.supabase.co/functions/v1/og-image?id=${videoId}&site=${encodeURIComponent(window.location.origin)}`;
   const directUrl = `${window.location.origin}/video/${videoId}`;
   const encodedTitle = encodeURIComponent(title);
   const encodedUrl = encodeURIComponent(edgeFunctionUrl);

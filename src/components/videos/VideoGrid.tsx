@@ -22,7 +22,7 @@ export const VideoGrid = forwardRef<HTMLDivElement, VideoGridProps>(
   ({ videos, isLoading }, ref) => {
     if (isLoading) {
       return (
-        <div ref={ref} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div ref={ref} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
           {Array.from({ length: 10 }).map((_, i) => (
             <div key={i} className="space-y-2">
               <Skeleton className="aspect-video w-full rounded-lg" />
@@ -44,7 +44,7 @@ export const VideoGrid = forwardRef<HTMLDivElement, VideoGridProps>(
     }
 
     return (
-      <div ref={ref} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div ref={ref} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
         {videos.map((video) => (
           <VideoCard
             key={video.id}
