@@ -14,16 +14,21 @@ interface ShareDialogProps {
 export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogProps) {
   // Direct URL to the video page
   const directUrl = `${window.location.origin}/video/${videoId}`;
+  
+  // Edge function URL for meta tag proxy (when working)
+  const ogProxyUrl = `https://xdxcfhdfjpdpfqyxtnwc.supabase.co/functions/v1/share-meta?id=${videoId}&site=${encodeURIComponent(window.location.origin)}`;
+  
   const encodedTitle = encodeURIComponent(title);
   const encodedDirectUrl = encodeURIComponent(directUrl);
+  const encodedOgProxyUrl = encodeURIComponent(ogProxyUrl);
 
   const socialPlatforms = [
     {
       name: 'X (Twitter)',
       icon: Twitter,
       color: 'bg-black hover:bg-black/80',
-      // Share direct video URL - meta tags are handled by react-helmet-async
-      url: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedDirectUrl}`,
+      // Use edge function for X - serves meta tags then redirects
+      url: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedOgProxyUrl}`,
     },
     {
       name: 'Facebook',
