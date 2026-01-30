@@ -12,11 +12,9 @@ interface ShareDialogProps {
 }
 
 export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogProps) {
-  // Use backend function URL for platforms that need server-side meta tags (X/Twitter)
-  const edgeFunctionUrl = `https://xdxcfhdfjpdpfqyxtnwc.supabase.co/functions/v1/og-image?id=${videoId}&site=${encodeURIComponent(window.location.origin)}`;
+  // Direct URL to the video page
   const directUrl = `${window.location.origin}/video/${videoId}`;
   const encodedTitle = encodeURIComponent(title);
-  const encodedUrl = encodeURIComponent(edgeFunctionUrl);
   const encodedDirectUrl = encodeURIComponent(directUrl);
 
   const socialPlatforms = [
@@ -24,20 +22,20 @@ export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogP
       name: 'X (Twitter)',
       icon: Twitter,
       color: 'bg-black hover:bg-black/80',
-      // X needs the edge function URL for proper meta tag scraping
-      url: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
+      // Share direct video URL - meta tags are handled by react-helmet-async
+      url: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedDirectUrl}`,
     },
     {
       name: 'Facebook',
       icon: Facebook,
       color: 'bg-[#1877F2] hover:bg-[#1877F2]/80',
-      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedDirectUrl}`,
     },
     {
       name: 'LinkedIn',
       icon: Linkedin,
       color: 'bg-[#0A66C2] hover:bg-[#0A66C2]/80',
-      url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+      url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedDirectUrl}`,
     },
     {
       name: 'WhatsApp',
