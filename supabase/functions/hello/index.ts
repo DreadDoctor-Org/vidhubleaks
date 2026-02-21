@@ -6,6 +6,36 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// Bot/crawler user agents that need meta tags without redirect
+const BOT_AGENTS = [
+  "twitterbot",
+  "facebookexternalhit",
+  "linkedinbot",
+  "slackbot",
+  "discordbot",
+  "telegrambot",
+  "whatsapp",
+  "googlebot",
+  "bingbot",
+  "yandexbot",
+  "baiduspider",
+  "duckduckbot",
+  "ia_archiver",
+  "semrushbot",
+  "ahrefsbot",
+  "mj12bot",
+  "pinterest",
+  "applebot",
+  "crawler",
+  "spider",
+  "bot",
+];
+
+function isBot(userAgent: string): boolean {
+  const ua = userAgent.toLowerCase();
+  return BOT_AGENTS.some((bot) => ua.includes(bot));
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -16,14 +46,35 @@ Deno.serve(async (req: Request) => {
     const videoId = url.searchParams.get("id");
     const site =
       url.searchParams.get("site") || "https://vidhubleaks.lovable.app";
+    const userAgent = req.headers.get("user-agent") || "";
 
     if (!videoId) {
       return new Response("Missing video ID", {
         status: 400,
-        headers: corsHeaders,
+        headers: { ...corsHeaders, "Content-Type": "text/plain" },
       });
     }
 
+    // For non-bot users, redirect immediately to the video page
+    let siteUrl = "https://vidhubleaks.lovable.app";
+    try {
+      siteUrl = new URL(site).origin;
+    } catch {
+      // use default
+    }
+    const videoUrl = `${siteUrl}/video/${videoId}`;
+
+    if (!isBot(userAgent)) {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          Location: videoUrl,
+        },
+      });
+    }
+
+    // For bots/crawlers: fetch video data and serve meta tags
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -38,7 +89,7 @@ Deno.serve(async (req: Request) => {
     if (error || !video) {
       return new Response("Video not found", {
         status: 404,
-        headers: corsHeaders,
+        headers: { ...corsHeaders, "Content-Type": "text/plain" },
       });
     }
 
@@ -50,61 +101,54 @@ Deno.serve(async (req: Request) => {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;") || "";
 
-    let siteUrl = "https://vidhubleaks.lovable.app";
-    try {
-      siteUrl = new URL(site).origin;
-    } catch {
-      // use default
-    }
-
+    // Ensure thumbnail is an absolute HTTPS URL
     let thumb = video.thumbnail_url || "";
     if (thumb && !thumb.startsWith("http")) {
-      thumb = `${supabaseUrl}${thumb.startsWith("/") ? "" : "/"}${thumb}`;
+      thumb = `${supabaseUrl}/storage/v1/object/public/${thumb.startsWith("/") ? thumb.slice(1) : thumb}`;
     }
 
     const title = esc(video.title || "Vid Hub Video");
     const desc = esc(
       video.description?.slice(0, 200) || "Watch this video on Vid Hub"
     );
-    const videoUrl = `${siteUrl}/video/${videoId}`;
     const domain = new URL(siteUrl).hostname;
 
+    // For bots: serve ONLY meta tags, NO redirect, NO meta-refresh
+    // This ensures crawlers can read the tags without being redirected away
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title} - Vid Hub</title>
 <meta name="title" content="${title}">
-<meta property="og:title" content="${title}">
-<meta name="twitter:title" content="${title}">
-<meta property="og:image" content="${thumb}">
-<meta name="twitter:image" content="${thumb}">
 <meta name="description" content="${desc}">
-<meta property="og:description" content="${desc}">
-<meta name="twitter:description" content="${desc}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vid Hub">
 <meta property="og:url" content="${videoUrl}">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${desc}">
+<meta property="og:image" content="${thumb}">
 <meta property="og:image:alt" content="${title}">
 <meta property="og:image:width" content="1280">
 <meta property="og:image:height" content="720">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="${videoUrl}">
+<meta name="twitter:title" content="${title}">
+<meta name="twitter:description" content="${desc}">
+<meta name="twitter:image" content="${thumb}">
 <meta name="twitter:image:alt" content="${title}">
+<meta name="twitter:url" content="${videoUrl}">
 <meta name="twitter:domain" content="${domain}">
 <link rel="canonical" href="${videoUrl}">
-<meta http-equiv="refresh" content="0;url=${videoUrl}">
 </head>
-<body style="background:#0a0a0a;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:system-ui,sans-serif">
-<div style="text-align:center">
+<body>
 <h1>${title}</h1>
-<p>Redirecting to <a href="${videoUrl}" style="color:#8B5CF6">Vid Hub</a>...</p>
-</div>
+<p>${desc}</p>
+<p><a href="${videoUrl}">Watch on Vid Hub</a></p>
 </body>
 </html>`;
 
     return new Response(html, {
+      status: 200,
       headers: {
         ...corsHeaders,
         "Content-Type": "text/html; charset=utf-8",
@@ -112,10 +156,10 @@ Deno.serve(async (req: Request) => {
       },
     });
   } catch (e) {
-    console.error("hello error:", e);
+    console.error("hello function error:", e);
     return new Response("Internal error", {
       status: 500,
-      headers: corsHeaders,
+      headers: { ...corsHeaders, "Content-Type": "text/plain" },
     });
   }
 });
