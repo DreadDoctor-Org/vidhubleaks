@@ -15,8 +15,8 @@ export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogP
   // Direct URL to the video page
   const directUrl = `${window.location.origin}/video/${videoId}`;
   
-  // Edge function URL for meta tag proxy (when working)
-  const ogProxyUrl = `https://xdxcfhdfjpdpfqyxtnwc.supabase.co/functions/v1/share-meta?id=${videoId}&site=${encodeURIComponent(window.location.origin)}`;
+  // Edge function URL for Twitter card meta tag proxy
+  const ogProxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hello?id=${videoId}&site=${encodeURIComponent(window.location.origin)}`;
   
   const encodedTitle = encodeURIComponent(title);
   const encodedDirectUrl = encodeURIComponent(directUrl);
