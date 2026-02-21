@@ -32,6 +32,7 @@ Deno.serve(async (req: Request) => {
       .from("videos")
       .select("title, description, thumbnail_url")
       .eq("id", videoId)
+      .eq("status", "published")
       .single();
 
     if (error || !video) {

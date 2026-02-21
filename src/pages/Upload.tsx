@@ -239,8 +239,8 @@ export default function Upload() {
         thumbnail_url: thumbnailUrl,
         category_id: categoryId || null,
         duration,
-        status: isAdmin ? 'published' : 'pending',
-        published_at: isAdmin ? new Date().toISOString() : null,
+        status: 'pending',
+        published_at: null,
       });
 
       setProgress(80);
@@ -282,7 +282,7 @@ export default function Upload() {
       }
 
       setProgress(100);
-      toast.success(isAdmin ? 'Video uploaded and published!' : 'Video uploaded successfully! It will be reviewed shortly.');
+      toast.success('Video uploaded successfully! It will be reviewed shortly.');
       navigate('/');
     } catch (error) {
       console.error('Upload error:', error);
