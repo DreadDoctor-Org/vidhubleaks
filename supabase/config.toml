@@ -1,7 +1,4 @@
 project_id = "xdxcfhdfjpdpfqyxtnwc"
 
-[functions.og_image]
-verify_jwt = false
-
-[functions.share-meta]
+[functions.hello]
 verify_jwt = false
