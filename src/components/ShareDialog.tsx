@@ -57,7 +57,7 @@ export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogP
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(directUrl);
+    navigator.clipboard.writeText(proxyUrl);
     toast.success('Link copied to clipboard!');
   };
 
