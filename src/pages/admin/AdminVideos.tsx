@@ -47,6 +47,7 @@ export default function AdminVideos() {
   const [activeTab, setActiveTab] = useState('all');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editVideo, setEditVideo] = useState<any>(null);
+  const [embedDialogOpen, setEmbedDialogOpen] = useState(false);
   const { data: videos, isLoading } = useVideos(activeTab === 'all' ? undefined : activeTab);
   const updateVideo = useUpdateVideo();
   const deleteVideo = useDeleteVideo();
