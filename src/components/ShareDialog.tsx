@@ -84,7 +84,7 @@ export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogP
 
         <div className="flex items-center gap-2">
           <Input
-            value={directUrl}
+            value={proxyUrl}
             readOnly
             className="flex-1 text-sm"
           />

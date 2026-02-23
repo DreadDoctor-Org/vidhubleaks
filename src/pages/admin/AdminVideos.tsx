@@ -51,7 +51,7 @@ export default function AdminVideos() {
   const deleteVideo = useDeleteVideo();
 
   const handleShare = (video: any) => {
-    const shareUrl = `${window.location.origin}/video/${video.id}`;
+    const shareUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hello?id=${video.id}&site=${encodeURIComponent(window.location.origin)}`;
     navigator.clipboard.writeText(shareUrl);
     toast.success('Video link copied to clipboard!');
   };
