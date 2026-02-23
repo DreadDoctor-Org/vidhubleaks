@@ -12,15 +12,11 @@ interface ShareDialogProps {
 }
 
 export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogProps) {
-  // Direct URL to the video page
-  const directUrl = `${window.location.origin}/video/${videoId}`;
-  
-  // Edge function URL for Twitter card meta tag proxy
-  const ogProxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hello?id=${videoId}&site=${encodeURIComponent(window.location.origin)}`;
+  // All shared links use the edge function proxy for rich previews
+  const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hello?id=${videoId}&site=${encodeURIComponent(window.location.origin)}`;
   
   const encodedTitle = encodeURIComponent(title);
-  const encodedDirectUrl = encodeURIComponent(directUrl);
-  const encodedOgProxyUrl = encodeURIComponent(ogProxyUrl);
+  const encodedProxyUrl = encodeURIComponent(proxyUrl);
 
   const socialPlatforms = [
     {
