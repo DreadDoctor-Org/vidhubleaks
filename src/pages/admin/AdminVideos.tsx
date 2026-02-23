@@ -86,9 +86,15 @@ export default function AdminVideos() {
     <div className="min-h-screen bg-background">
       <AdminSidebar />
       <main className="ml-64 p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Videos</h1>
-          <p className="text-muted-foreground">Manage and moderate all videos</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold">Videos</h1>
+            <p className="text-muted-foreground">Manage and moderate all videos</p>
+          </div>
+          <Button onClick={() => setEmbedDialogOpen(true)} className="gap-2">
+            <Code className="h-4 w-4" />
+            Add Embed Video
+          </Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>

@@ -320,6 +320,7 @@ export type Database = {
           created_at: string
           description: string | null
           duration: number | null
+          embed_url: string | null
           id: string
           is_featured: boolean | null
           likes_count: number | null
@@ -337,6 +338,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           duration?: number | null
+          embed_url?: string | null
           id?: string
           is_featured?: boolean | null
           likes_count?: number | null
@@ -354,6 +356,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           duration?: number | null
+          embed_url?: string | null
           id?: string
           is_featured?: boolean | null
           likes_count?: number | null
