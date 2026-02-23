@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { useVideos, useUpdateVideo, useDeleteVideo } from '@/hooks/useVideos';
 import { VideoEditDialog } from '@/components/admin/VideoEditDialog';
+import { AdminEmbedDialog } from '@/components/admin/AdminEmbedDialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -29,7 +30,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MoreHorizontal, Check, X, Trash2, Eye, Edit, Share2 } from 'lucide-react';
+import { MoreHorizontal, Check, X, Trash2, Eye, Edit, Share2, Code, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -46,6 +47,7 @@ export default function AdminVideos() {
   const [activeTab, setActiveTab] = useState('all');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editVideo, setEditVideo] = useState<any>(null);
+  const [embedDialogOpen, setEmbedDialogOpen] = useState(false);
   const { data: videos, isLoading } = useVideos(activeTab === 'all' ? undefined : activeTab);
   const updateVideo = useUpdateVideo();
   const deleteVideo = useDeleteVideo();
@@ -84,9 +86,15 @@ export default function AdminVideos() {
     <div className="min-h-screen bg-background">
       <AdminSidebar />
       <main className="ml-64 p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Videos</h1>
-          <p className="text-muted-foreground">Manage and moderate all videos</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold">Videos</h1>
+            <p className="text-muted-foreground">Manage and moderate all videos</p>
+          </div>
+          <Button onClick={() => setEmbedDialogOpen(true)} className="gap-2">
+            <Code className="h-4 w-4" />
+            Add Embed Video
+          </Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -219,6 +227,12 @@ export default function AdminVideos() {
           video={editVideo}
           open={!!editVideo}
           onOpenChange={(open) => !open && setEditVideo(null)}
+        />
+
+        {/* Embed Video Dialog */}
+        <AdminEmbedDialog
+          open={embedDialogOpen}
+          onOpenChange={setEmbedDialogOpen}
         />
       </main>
     </div>

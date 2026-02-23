@@ -157,6 +157,7 @@ export default function Video() {
   const videoFile = video.video_files?.find((f: any) => f.is_original) || video.video_files?.[0];
   const profile = video.profiles;
   const hasVideoFile = videoFile?.file_url;
+  const hasEmbed = !!(video as any).embed_url;
 
   const pageTitle = `${video.title} - Vid Hub`;
   const pageDescription = video.description || `Watch ${video.title} on Vid Hub`;
@@ -208,7 +209,15 @@ export default function Video() {
           <div className="lg:col-span-2 space-y-6">
             {/* Player Container */}
             <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-              {hasVideoFile ? (
+              {hasEmbed ? (
+                <iframe
+                  src={(video as any).embed_url}
+                  className="w-full h-full"
+                  frameBorder="0"
+                  allowFullScreen
+                  allow="autoplay; fullscreen"
+                />
+              ) : hasVideoFile ? (
                 <video
                   ref={videoRef}
                   controls
