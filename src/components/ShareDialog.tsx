@@ -23,32 +23,31 @@ export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogP
       name: 'X (Twitter)',
       icon: Twitter,
       color: 'bg-black hover:bg-black/80',
-      // Use edge function for X - serves meta tags then redirects
-      url: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedOgProxyUrl}`,
+      url: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedProxyUrl}`,
     },
     {
       name: 'Facebook',
       icon: Facebook,
       color: 'bg-[#1877F2] hover:bg-[#1877F2]/80',
-      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedDirectUrl}`,
+      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedProxyUrl}`,
     },
     {
       name: 'LinkedIn',
       icon: Linkedin,
       color: 'bg-[#0A66C2] hover:bg-[#0A66C2]/80',
-      url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedDirectUrl}`,
+      url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedProxyUrl}`,
     },
     {
       name: 'WhatsApp',
       icon: MessageCircle,
       color: 'bg-[#25D366] hover:bg-[#25D366]/80',
-      url: `https://wa.me/?text=${encodedTitle}%20${encodedDirectUrl}`,
+      url: `https://wa.me/?text=${encodedTitle}%20${encodedProxyUrl}`,
     },
     {
       name: 'Email',
       icon: Mail,
       color: 'bg-muted hover:bg-muted/80',
-      url: `mailto:?subject=${encodedTitle}&body=Check out this video: ${encodedDirectUrl}`,
+      url: `mailto:?subject=${encodedTitle}&body=Check out this video: ${encodedProxyUrl}`,
     },
   ];
 
