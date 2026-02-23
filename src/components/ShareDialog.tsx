@@ -12,47 +12,42 @@ interface ShareDialogProps {
 }
 
 export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogProps) {
-  // Direct URL to the video page
-  const directUrl = `${window.location.origin}/video/${videoId}`;
-  
-  // Edge function URL for Twitter card meta tag proxy
-  const ogProxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hello?id=${videoId}&site=${encodeURIComponent(window.location.origin)}`;
+  // All shared links use the edge function proxy for rich previews
+  const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hello?id=${videoId}&site=${encodeURIComponent(window.location.origin)}`;
   
   const encodedTitle = encodeURIComponent(title);
-  const encodedDirectUrl = encodeURIComponent(directUrl);
-  const encodedOgProxyUrl = encodeURIComponent(ogProxyUrl);
+  const encodedProxyUrl = encodeURIComponent(proxyUrl);
 
   const socialPlatforms = [
     {
       name: 'X (Twitter)',
       icon: Twitter,
       color: 'bg-black hover:bg-black/80',
-      // Use edge function for X - serves meta tags then redirects
-      url: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedOgProxyUrl}`,
+      url: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedProxyUrl}`,
     },
     {
       name: 'Facebook',
       icon: Facebook,
       color: 'bg-[#1877F2] hover:bg-[#1877F2]/80',
-      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedDirectUrl}`,
+      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedProxyUrl}`,
     },
     {
       name: 'LinkedIn',
       icon: Linkedin,
       color: 'bg-[#0A66C2] hover:bg-[#0A66C2]/80',
-      url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedDirectUrl}`,
+      url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedProxyUrl}`,
     },
     {
       name: 'WhatsApp',
       icon: MessageCircle,
       color: 'bg-[#25D366] hover:bg-[#25D366]/80',
-      url: `https://wa.me/?text=${encodedTitle}%20${encodedDirectUrl}`,
+      url: `https://wa.me/?text=${encodedTitle}%20${encodedProxyUrl}`,
     },
     {
       name: 'Email',
       icon: Mail,
       color: 'bg-muted hover:bg-muted/80',
-      url: `mailto:?subject=${encodedTitle}&body=Check out this video: ${encodedDirectUrl}`,
+      url: `mailto:?subject=${encodedTitle}&body=Check out this video: ${encodedProxyUrl}`,
     },
   ];
 
@@ -62,7 +57,7 @@ export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogP
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(directUrl);
+    navigator.clipboard.writeText(proxyUrl);
     toast.success('Link copied to clipboard!');
   };
 
@@ -89,7 +84,7 @@ export function ShareDialog({ open, onOpenChange, videoId, title }: ShareDialogP
 
         <div className="flex items-center gap-2">
           <Input
-            value={directUrl}
+            value={proxyUrl}
             readOnly
             className="flex-1 text-sm"
           />
