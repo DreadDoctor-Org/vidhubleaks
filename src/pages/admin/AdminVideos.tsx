@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { useVideos, useUpdateVideo, useDeleteVideo } from '@/hooks/useVideos';
 import { VideoEditDialog } from '@/components/admin/VideoEditDialog';
+import { AdminEmbedDialog } from '@/components/admin/AdminEmbedDialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
