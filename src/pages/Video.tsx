@@ -209,7 +209,15 @@ export default function Video() {
           <div className="lg:col-span-2 space-y-6">
             {/* Player Container */}
             <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-              {hasVideoFile ? (
+              {hasEmbed ? (
+                <iframe
+                  src={(video as any).embed_url}
+                  className="w-full h-full"
+                  frameBorder="0"
+                  allowFullScreen
+                  allow="autoplay; fullscreen"
+                />
+              ) : hasVideoFile ? (
                 <video
                   ref={videoRef}
                   controls

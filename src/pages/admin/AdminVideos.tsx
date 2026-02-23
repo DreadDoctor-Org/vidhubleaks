@@ -228,6 +228,12 @@ export default function AdminVideos() {
           open={!!editVideo}
           onOpenChange={(open) => !open && setEditVideo(null)}
         />
+
+        {/* Embed Video Dialog */}
+        <AdminEmbedDialog
+          open={embedDialogOpen}
+          onOpenChange={setEmbedDialogOpen}
+        />
       </main>
     </div>
   );
