@@ -167,6 +167,23 @@ export default function Video() {
         {hasVideoFile && <meta name="twitter:player:height" content="720" />}
         {hasVideoFile && <meta name="twitter:player:stream" content={videoFile.file_url} />}
         <meta name="twitter:site" content="@TweetPrince12" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'VideoObject',
+            name: video.title,
+            description: video.description || `Watch ${video.title} on VidHub`,
+            thumbnailUrl: thumbnailUrl || undefined,
+            uploadDate: video.created_at,
+            ...(video.duration > 0 && { duration: `PT${Math.floor(video.duration / 60)}M${video.duration % 60}S` }),
+            ...(hasVideoFile && { contentUrl: videoFile.file_url }),
+            ...(hasEmbed && { embedUrl: (video as any).embed_url }),
+            interactionStatistic: [
+              { '@type': 'InteractionCounter', interactionType: 'https://schema.org/WatchAction', userInteractionCount: video.views_count || 0 },
+              { '@type': 'InteractionCounter', interactionType: 'https://schema.org/LikeAction', userInteractionCount: video.likes_count || 0 },
+            ],
+          })}
+        </script>
       </Helmet>
 
       <Header />
