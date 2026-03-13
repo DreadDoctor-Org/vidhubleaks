@@ -1,30 +1,51 @@
+import { useEffect, useRef, useCallback } from 'react';
 import { Header } from '@/components/layout/Header';
 import { VideoGrid } from '@/components/videos/VideoGrid';
-import { useVideos } from '@/hooks/useVideos';
+import { useTrendingVideos, useLatestVideos, useInfiniteVideos } from '@/hooks/useVideos';
 import { useCategories } from '@/hooks/useCategories';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
-import { BannerAd728, BannerAd320, NativeBannerAd } from '@/components/ads';
+import { TopBannerAd, StickyBottomAd, FloatingCornerAd } from '@/components/ads';
 import { Helmet } from 'react-helmet-async';
-
+import { Flame, Clock, Star, Loader2 } from 'lucide-react';
 
 export default function Index() {
-  const { data: videos, isLoading } = useVideos('published');
+  const { data: trendingVideos, isLoading: trendingLoading } = useTrendingVideos();
+  const { data: latestVideos, isLoading: latestLoading } = useLatestVideos();
   const { data: categories } = useCategories();
+  const {
+    data: infiniteData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: recommendedLoading,
+  } = useInfiniteVideos('published');
 
-  // Split videos for ad insertion
-  const videosArray = videos || [];
-  const firstBatch = videosArray.slice(0, 4);
-  const secondBatch = videosArray.slice(4);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (observerRef.current) observerRef.current.disconnect();
+      if (!node) return;
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      }, { rootMargin: '400px' });
+      observerRef.current.observe(node);
+    },
+    [hasNextPage, isFetchingNextPage, fetchNextPage]
+  );
+
+  const recommendedVideos = infiniteData?.pages.flat() ?? [];
 
   const canonicalUrl = `${window.location.origin}/`;
-  const pageTitle = 'Vid Hub | Watch & Share Videos';
-  const pageDescription = 'Vid Hub: discover, watch, and share videos from creators around the world. Browse latest uploads and categories.';
+  const pageTitle = 'VidHub | Watch & Share Videos';
+  const pageDescription = 'Discover, watch, and share videos from creators around the world on VidHub.';
 
   const websiteJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Vid Hub',
+    name: 'VidHub',
     url: canonicalUrl,
     potentialAction: {
       '@type': 'SearchAction',
@@ -34,7 +55,7 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16">
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
@@ -44,30 +65,22 @@ export default function Index() {
 
       <Header />
 
-      {/* Top 728x90 Banner Ad */}
-      <BannerAd728 />
+      {/* Top Banner Ad */}
+      <TopBannerAd />
 
-      <main className="mx-auto w-full max-w-screen-2xl px-4 py-8">
-        <section className="mb-12 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Welcome to <span className="text-gradient">VidHub</span>
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover and share amazing videos from creators around the world
-          </p>
-        </section>
-
+      <main className="mx-auto w-full max-w-screen-2xl px-3 md:px-6 py-6 space-y-10">
+        {/* Categories */}
         {categories && categories.length > 0 && (
-          <section className="mb-8" aria-label="Featured video categories">
+          <section aria-label="Categories">
             <div className="flex flex-wrap gap-2 justify-center">
               {categories
                 .filter((c) => c.is_active)
-                .slice(0, 10)
+                .slice(0, 12)
                 .map((category) => (
-                  <Link key={category.id} to={`/category/${category.slug}`} aria-label={`Browse ${category.name} videos`}>
+                  <Link key={category.id} to={`/category/${category.slug}`}>
                     <Badge
                       variant="secondary"
-                      className="px-4 py-2 text-sm cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                      className="px-3 py-1.5 text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
                     >
                       {category.name}
                     </Badge>
@@ -77,32 +90,53 @@ export default function Index() {
           </section>
         )}
 
-        <section className="mb-12" aria-label="Latest videos">
-          <h2 className="text-2xl font-bold mb-6">Latest Videos</h2>
-
-          {/* First batch of videos */}
-          <VideoGrid videos={firstBatch} isLoading={isLoading} />
-
-          {/* In-feed 320x50 Ad */}
-          {videosArray.length > 4 && (
-            <div className="my-6">
-              <BannerAd320 />
-            </div>
-          )}
-
-          {/* Second batch of videos */}
-          {secondBatch.length > 0 && <VideoGrid videos={secondBatch} isLoading={false} />}
+        {/* Trending Videos */}
+        <section aria-label="Trending videos">
+          <div className="flex items-center gap-2 mb-4">
+            <Flame className="h-5 w-5 text-destructive" />
+            <h2 className="text-xl font-bold">Trending Now</h2>
+          </div>
+          <VideoGrid videos={trendingVideos} isLoading={trendingLoading} skeletonCount={8} />
         </section>
+
+        {/* Latest Videos */}
+        <section aria-label="Latest videos">
+          <div className="flex items-center gap-2 mb-4">
+            <Clock className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-bold">Latest Videos</h2>
+          </div>
+          <VideoGrid videos={latestVideos} isLoading={latestLoading} skeletonCount={8} />
+        </section>
+
+        {/* Recommended / Infinite Scroll */}
+        <section aria-label="Recommended videos">
+          <div className="flex items-center gap-2 mb-4">
+            <Star className="h-5 w-5 text-accent" />
+            <h2 className="text-xl font-bold">Recommended</h2>
+          </div>
+          <VideoGrid videos={recommendedVideos} isLoading={recommendedLoading} skeletonCount={12} />
+          
+          {/* Infinite scroll trigger */}
+          <div ref={loadMoreRef} className="flex justify-center py-8">
+            {isFetchingNextPage && (
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            )}
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="border-t border-border pt-6 pb-4">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+            <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+            <Link to="/search" className="hover:text-foreground transition-colors">Browse</Link>
+            <span>© {new Date().getFullYear()} VidHub</span>
+          </div>
+        </footer>
       </main>
 
-      {/* Bottom Native Banner Ad */}
-      <NativeBannerAd />
-
-      {/* Bottom 728x90 Banner Ad */}
-      <BannerAd728 />
-
-      {/* Bottom Native Banner Ad */}
-      <NativeBannerAd />
+      {/* Floating ads */}
+      <FloatingCornerAd />
+      <StickyBottomAd />
     </div>
   );
 }

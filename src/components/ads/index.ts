@@ -4,3 +4,8 @@ export { NativeBannerAd } from './NativeBannerAd';
 export { SidebarAd1 } from './SidebarAd1';
 export { SidebarAd2 } from './SidebarAd2';
 export { SocialBar } from './SocialBar';
+export { TopBannerAd } from './TopBannerAd';
+export { StickyBottomAd } from './StickyBottomAd';
+export { FloatingCornerAd } from './FloatingCornerAd';
+export { PopunderAd } from './PopunderAd';
+export { InGridNativeAd } from './InGridNativeAd';
