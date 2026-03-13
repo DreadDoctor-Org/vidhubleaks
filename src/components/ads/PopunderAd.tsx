@@ -9,7 +9,7 @@ export function PopunderAd() {
     container.innerHTML = '';
 
     const script = document.createElement('script');
-    script.src = 'https://elegantimpose.com/ee/d6/d5/eed6d57092494acaea0f43b5f48789bf.js';
+    script.src = 'https://elegantimpose.com/5e/54/55/5e54554abda5df1c68cff7f7f4a68b28.js';
     container.appendChild(script);
 
     return () => { if (container) container.innerHTML = ''; };
