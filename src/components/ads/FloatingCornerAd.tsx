@@ -15,5 +15,5 @@ export function FloatingCornerAd() {
     return () => { if (container) container.innerHTML = ''; };
   }, []);
 
-  return <div ref={containerRef} className="fixed bottom-16 right-4 z-40" />;
+  return <div ref={containerRef} className="hidden fixed bottom-16 right-4 z-40" />;
 }
