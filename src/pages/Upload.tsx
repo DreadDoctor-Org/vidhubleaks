@@ -231,6 +231,7 @@ export default function Upload() {
       setProgress(70);
 
       // Create video record - auto-publish for admins
+      const isAdminUser = isAdmin;
       const videoRecord = await createVideo.mutateAsync({
         user_id: user.id,
         title,
@@ -239,8 +240,8 @@ export default function Upload() {
         thumbnail_url: thumbnailUrl,
         category_id: categoryId || null,
         duration,
-        status: 'pending',
-        published_at: null,
+        status: isAdminUser ? 'published' : 'pending',
+        published_at: isAdminUser ? new Date().toISOString() : null,
       });
 
       setProgress(80);
@@ -282,7 +283,7 @@ export default function Upload() {
       }
 
       setProgress(100);
-      toast.success('Video uploaded successfully! It will be reviewed shortly.');
+      toast.success(isAdminUser ? 'Video published successfully!' : 'Video uploaded successfully! It will be reviewed shortly.');
       navigate('/');
     } catch (error) {
       console.error('Upload error:', error);

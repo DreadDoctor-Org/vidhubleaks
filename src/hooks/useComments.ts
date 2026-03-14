@@ -26,7 +26,7 @@ export function useComments(videoId: string) {
         .from('comments')
         .select(`
           *,
-          profiles (username, display_name, avatar_url)
+          profiles!comments_user_id_profiles_fkey (username, display_name, avatar_url)
         `)
         .eq('video_id', videoId)
         .order('created_at', { ascending: true });
