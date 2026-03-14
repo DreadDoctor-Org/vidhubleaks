@@ -283,7 +283,7 @@ export default function Upload() {
       }
 
       setProgress(100);
-      toast.success('Video uploaded successfully! It will be reviewed shortly.');
+      toast.success(isAdminUser ? 'Video published successfully!' : 'Video uploaded successfully! It will be reviewed shortly.');
       navigate('/');
     } catch (error) {
       console.error('Upload error:', error);
