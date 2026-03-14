@@ -26,8 +26,8 @@ import {
   Clock,
   Share2,
   Tag,
-  MessageSquare,
 } from 'lucide-react';
+import { CommentSection } from '@/components/comments/CommentSection';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
