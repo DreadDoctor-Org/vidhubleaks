@@ -26,8 +26,8 @@ import {
   Clock,
   Share2,
   Tag,
-  MessageSquare,
 } from 'lucide-react';
+import { CommentSection } from '@/components/comments/CommentSection';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -299,12 +299,8 @@ export default function Video() {
         {/* Second Native Ad */}
         <NativeBannerAd />
 
-        {/* Comments Placeholder */}
-        <section className="border border-border rounded-lg p-6 text-center">
-          <MessageSquare className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-          <h3 className="font-semibold mb-1">Comments</h3>
-          <p className="text-sm text-muted-foreground">Comments coming soon</p>
-        </section>
+        {/* Comments */}
+        <CommentSection videoId={id || ''} />
       </main>
 
       {/* Floating ads */}
