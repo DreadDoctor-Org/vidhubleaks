@@ -32,7 +32,7 @@ export function useComments(videoId: string) {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      return buildCommentTree((data || []) as Comment[]);
+      return buildCommentTree((data || []) as unknown as Comment[]);
     },
     enabled: !!videoId,
   });
