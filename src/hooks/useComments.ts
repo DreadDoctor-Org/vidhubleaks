@@ -25,28 +25,14 @@ export function useComments(videoId: string) {
       const { data, error } = await supabase
         .from('comments')
         .select(`
-          *et,
-          profiles!comments_user_id_fkey (username, display_name, avatar_url)
+          *,
+          profiles (username, display_name, avatar_url)
         `)
         .eq('video_id', videoId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: true });
 
-      if (error) {
-        // Fallback: query without explicit foreign key name
-        const { data: fallbackData, error: fallbackError } = await supabase
-          .from('comments')
-          .select(`
-            *,
-            profiles (username, display_name, avatar_url)
-          `)
-          .eq('video_id', videoId)
-          .order('created_at', { ascending: false });
-
-        if (fallbackError) throw fallbackError;
-        return buildCommentTree(fallbackData as Comment[]);
-      }
-
-      return buildCommentTree(data as Comment[]);
+      if (error) throw error;
+      return buildCommentTree((data || []) as Comment[]);
     },
     enabled: !!videoId,
   });
