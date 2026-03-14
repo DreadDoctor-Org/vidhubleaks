@@ -231,6 +231,7 @@ export default function Upload() {
       setProgress(70);
 
       // Create video record - auto-publish for admins
+      const isAdminUser = isAdmin;
       const videoRecord = await createVideo.mutateAsync({
         user_id: user.id,
         title,
@@ -239,8 +240,8 @@ export default function Upload() {
         thumbnail_url: thumbnailUrl,
         category_id: categoryId || null,
         duration,
-        status: 'pending',
-        published_at: null,
+        status: isAdminUser ? 'published' : 'pending',
+        published_at: isAdminUser ? new Date().toISOString() : null,
       });
 
       setProgress(80);
