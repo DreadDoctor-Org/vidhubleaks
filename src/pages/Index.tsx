@@ -5,7 +5,7 @@ import { useTrendingVideos, useLatestVideos, useInfiniteVideos } from '@/hooks/u
 import { useCategories } from '@/hooks/useCategories';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
-import { TopBannerAd, StickyBottomAd } from '@/components/ads';
+import { SocialBar, BoxAd300 } from '@/components/ads';
 import { Helmet } from 'react-helmet-async';
 import { Flame, Clock, Star, Loader2 } from 'lucide-react';
 
@@ -64,9 +64,7 @@ export default function Index() {
       </Helmet>
 
       <Header />
-
-      {/* Top Banner Ad */}
-      <TopBannerAd />
+      <SocialBar />
 
       <main className="mx-auto w-full max-w-screen-2xl px-3 md:px-6 py-6 space-y-10">
         {/* Categories */}
@@ -106,6 +104,7 @@ export default function Index() {
             <h2 className="text-xl font-bold">Latest Videos</h2>
           </div>
           <VideoGrid videos={latestVideos} isLoading={latestLoading} skeletonCount={8} />
+          <BoxAd300 />
         </section>
 
         {/* Recommended / Infinite Scroll */}
@@ -114,7 +113,12 @@ export default function Index() {
             <Star className="h-5 w-5 text-accent" />
             <h2 className="text-xl font-bold">Recommended</h2>
           </div>
-          <VideoGrid videos={recommendedVideos} isLoading={recommendedLoading} skeletonCount={12} />
+          <VideoGrid
+            videos={recommendedVideos}
+            isLoading={recommendedLoading}
+            skeletonCount={12}
+            insertAdsEvery={8}
+          />
           
           {/* Infinite scroll trigger */}
           <div ref={loadMoreRef} className="flex justify-center py-8">
@@ -133,9 +137,6 @@ export default function Index() {
           </div>
         </footer>
       </main>
-
-      {/* Floating ads */}
-      <StickyBottomAd />
     </div>
   );
 }

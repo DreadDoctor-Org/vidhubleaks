@@ -11,12 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ShareDialog } from '@/components/ShareDialog';
-import {
-  TopBannerAd,
-  NativeBannerAd,
-  StickyBottomAd,
-  PopunderAd,
-} from '@/components/ads';
+import { BannerAd728, SidebarAd } from '@/components/ads';
 import {
   Play,
   ThumbsUp,
@@ -186,12 +181,9 @@ export default function Video() {
       </Helmet>
 
       <Header />
-      <TopBannerAd />
 
-      {/* Popunder script */}
-      <PopunderAd />
-
-      <main className="mx-auto max-w-screen-xl px-3 md:px-6 py-6 space-y-6">
+      <main className="mx-auto max-w-screen-xl px-3 md:px-6 py-6 space-y-6 lg:grid lg:grid-cols-[1fr_320px] lg:gap-6 lg:space-y-0">
+        <div className="space-y-6 min-w-0">
         {/* Video Player */}
         <div className="relative aspect-video bg-black rounded-lg overflow-hidden group cursor-pointer" onClick={!isPlaying ? handlePlayClick : undefined}>
           {hasEmbed ? (
@@ -235,6 +227,9 @@ export default function Video() {
         {/* Video Info */}
         <div className="space-y-4">
           <h1 className="text-xl md:text-2xl font-bold">{video.title}</h1>
+
+          {/* 728x90 banner directly under the title of the opened post */}
+          <BannerAd728 />
 
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <span className="flex items-center gap-1"><Eye className="h-4 w-4" />{video.views_count?.toLocaleString() || 0} views</span>
@@ -286,24 +281,23 @@ export default function Video() {
           )}
         </div>
 
-        {/* Native Ad */}
-        <NativeBannerAd />
-
         {/* Related Videos */}
         <section aria-label="Related videos">
           <h2 className="text-lg font-bold mb-4">Related Videos</h2>
           <VideoGrid videos={relatedVideos} isLoading={!relatedVideos} skeletonCount={12} />
         </section>
 
-        {/* Second Native Ad */}
-        <NativeBannerAd />
-
         {/* Comments */}
         <CommentSection videoId={id || ''} />
-      </main>
+        </div>
 
-      {/* Floating ads */}
-      <StickyBottomAd />
+        {/* Right sidebar ad */}
+        <aside className="hidden lg:block">
+          <div className="sticky top-20">
+            <SidebarAd />
+          </div>
+        </aside>
+      </main>
 
       <ShareDialog open={shareDialogOpen} onOpenChange={setShareDialogOpen} videoId={id || ''} title={video?.title || 'VidHub Video'} />
     </div>
