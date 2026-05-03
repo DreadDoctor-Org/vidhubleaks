@@ -102,7 +102,6 @@ export default function Video() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <TopBannerAd />
         <main className="mx-auto max-w-screen-xl px-3 md:px-6 py-6">
           <Skeleton className="w-full aspect-video rounded-lg mb-4" />
           <Skeleton className="h-7 w-2/3 mb-3" />
