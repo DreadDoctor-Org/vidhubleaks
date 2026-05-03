@@ -36,9 +36,6 @@ export function AdminEmbedDialog({ open, onOpenChange }: AdminEmbedDialogProps) 
 
   const extractedUrl = extractEmbedUrl(embedCode);
 
-  // Verify thumbnail loads
-  useState; // keep import
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !extractedUrl || !title.trim()) return;
