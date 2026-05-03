@@ -15,7 +15,6 @@ import {
   TopBannerAd,
   NativeBannerAd,
   StickyBottomAd,
-  FloatingCornerAd,
   PopunderAd,
 } from '@/components/ads';
 import {
