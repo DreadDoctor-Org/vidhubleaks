@@ -21,7 +21,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Upload as UploadIcon, Video, X, Loader2, Tag, Plus, Image } from 'lucide-react';
 import { toast } from 'sonner';
-import { BannerAd728 } from '@/components/ads';
 
 export default function Upload() {
   const { user, isAdmin } = useAuth();
@@ -296,10 +295,7 @@ export default function Upload() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
-      {/* Top Banner Ad */}
-      <BannerAd728 />
-      
+
       <main className="container max-w-2xl px-4 py-8">
         <Card className="border-border bg-card">
           <CardHeader>
@@ -507,9 +503,6 @@ export default function Upload() {
           </CardContent>
         </Card>
       </main>
-
-      {/* Bottom Banner Ad */}
-      <BannerAd728 />
     </div>
   );
 }

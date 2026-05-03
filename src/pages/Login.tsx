@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
-import { BannerAd728 } from '@/components/ads';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -33,9 +32,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col gradient-dark">
-      {/* Top Banner Ad */}
-      <BannerAd728 />
-      
       <div className="flex-1 flex items-center justify-center px-4">
         <Card className="w-full max-w-md border-border bg-card/50 backdrop-blur">
           <CardHeader className="text-center">
@@ -84,9 +80,6 @@ export default function Login() {
           </form>
         </Card>
       </div>
-
-      {/* Bottom Banner Ad */}
-      <BannerAd728 />
     </div>
   );
 }
