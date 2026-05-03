@@ -15,7 +15,7 @@ export const BannerAd728 = forwardRef<HTMLDivElement>((_, ref) => {
     optionsScript.type = 'text/javascript';
     optionsScript.text = `
       atOptions = {
-        'key' : '1a513f6d9e3f2aef09a35d72ccfc06fb',
+        'key' : 'a1cfc47dbebd625859c8fd76c550ab16',
         'format' : 'iframe',
         'height' : 90,
         'width' : 728,
@@ -27,7 +27,7 @@ export const BannerAd728 = forwardRef<HTMLDivElement>((_, ref) => {
     // Create the invoke script
     const invokeScript = document.createElement('script');
     invokeScript.type = 'text/javascript';
-    invokeScript.src = 'https://elegantimpose.com/1a513f6d9e3f2aef09a35d72ccfc06fb/invoke.js';
+    invokeScript.src = 'https://elegantimpose.com/a1cfc47dbebd625859c8fd76c550ab16/invoke.js';
     container.appendChild(invokeScript);
 
     return () => {

@@ -15,7 +15,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Search as SearchIcon, X, Filter } from 'lucide-react';
-import { BannerAd728 } from '@/components/ads';
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -137,10 +136,7 @@ export default function Search() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
-      {/* Top Banner Ad */}
-      <BannerAd728 />
-      
+
       <main className="container px-4 py-8">
         <h1 className="text-3xl font-bold text-foreground mb-8">Search Videos</h1>
 
@@ -260,9 +256,6 @@ export default function Search() {
 
         <VideoGrid videos={videos} isLoading={loading} />
       </main>
-
-      {/* Bottom Banner Ad */}
-      <BannerAd728 />
     </div>
   );
 }

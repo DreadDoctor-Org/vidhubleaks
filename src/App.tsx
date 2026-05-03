@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { SocialBar } from '@/components/ads';
+import { PopunderAd, StickyBottomAd } from '@/components/ads';
 import Index from '@/pages/Index';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -33,8 +33,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
-            {/* Social Bar - appears on all pages */}
-            <SocialBar />
+            {/* Popunder + sticky bottom banner appear across all pages */}
+            <PopunderAd />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
@@ -52,6 +52,7 @@ const App = () => (
               <Route path="/admin/settings" element={<ProtectedRoute requireAdmin><AdminSettings /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <StickyBottomAd />
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

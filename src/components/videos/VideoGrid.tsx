@@ -1,7 +1,7 @@
 import { forwardRef, Fragment } from 'react';
 import { VideoCard } from './VideoCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { InGridNativeAd } from '@/components/ads/InGridNativeAd';
+import { BoxAd300 } from '@/components/ads/BoxAd300';
 
 interface Video {
   id: string;
@@ -19,11 +19,12 @@ interface VideoGridProps {
   videos?: Video[];
   isLoading?: boolean;
   skeletonCount?: number;
+  /** Insert a 300x250 box ad after every N video cards. 0/undefined disables. */
   insertAdsEvery?: number;
 }
 
 export const VideoGrid = forwardRef<HTMLDivElement, VideoGridProps>(
-  ({ videos, isLoading, skeletonCount = 8, insertAdsEvery = 6 }, ref) => {
+  ({ videos, isLoading, skeletonCount = 8, insertAdsEvery = 0 }, ref) => {
     if (isLoading) {
       return (
         <div ref={ref} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
@@ -62,9 +63,11 @@ export const VideoGrid = forwardRef<HTMLDivElement, VideoGridProps>(
               categoryName={video.categories?.name}
               isTrending={video.is_featured ?? false}
             />
-            {(index + 1) % insertAdsEvery === 0 && (
-              <InGridNativeAd key={`ad-${index}`} />
-            )}
+            {insertAdsEvery > 0 &&
+              (index + 1) % insertAdsEvery === 0 &&
+              index < videos.length - 1 && (
+                <BoxAd300 key={`ad-${index}`} />
+              )}
           </Fragment>
         ))}
       </div>

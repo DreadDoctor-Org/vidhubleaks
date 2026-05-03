@@ -1,11 +1,6 @@
 export { BannerAd728 } from './BannerAd728';
-export { BannerAd320 } from './BannerAd320';
-export { NativeBannerAd } from './NativeBannerAd';
-export { SidebarAd1 } from './SidebarAd1';
-export { SidebarAd2 } from './SidebarAd2';
+export { BoxAd300 } from './BoxAd300';
+export { SidebarAd } from './SidebarAd';
 export { SocialBar } from './SocialBar';
-export { TopBannerAd } from './TopBannerAd';
 export { StickyBottomAd } from './StickyBottomAd';
-export { FloatingCornerAd } from './FloatingCornerAd';
 export { PopunderAd } from './PopunderAd';
-export { InGridNativeAd } from './InGridNativeAd';
