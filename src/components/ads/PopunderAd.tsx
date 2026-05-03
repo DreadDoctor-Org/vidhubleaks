@@ -1,19 +1,16 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+
+const POPUNDER_SRC =
+  'https://elegantimpose.com/8b/bb/8f/8bbb8f2b2dc5399c739363cae4fad761.js';
 
 export function PopunderAd() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    container.innerHTML = '';
-
+    if (document.querySelector(`script[src="${POPUNDER_SRC}"]`)) return;
     const script = document.createElement('script');
-    script.src = 'https://elegantimpose.com/5e/54/55/5e54554abda5df1c68cff7f7f4a68b28.js';
-    container.appendChild(script);
-
-    return () => { if (container) container.innerHTML = ''; };
+    script.src = POPUNDER_SRC;
+    script.async = true;
+    document.body.appendChild(script);
   }, []);
 
-  return <div ref={containerRef} className="hidden" />;
+  return null;
 }

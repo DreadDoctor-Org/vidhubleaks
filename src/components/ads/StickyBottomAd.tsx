@@ -12,7 +12,7 @@ export function StickyBottomAd() {
     optionsScript.type = 'text/javascript';
     optionsScript.text = `
       atOptions = {
-        'key' : '99d324bb48ab2063b2d1e4f1405efaf3',
+        'key' : '4700ecea6b93a49e0ae29dfdd21b0acd',
         'format' : 'iframe',
         'height' : 50,
         'width' : 320,
@@ -23,7 +23,7 @@ export function StickyBottomAd() {
 
     const invokeScript = document.createElement('script');
     invokeScript.type = 'text/javascript';
-    invokeScript.src = 'https://elegantimpose.com/99d324bb48ab2063b2d1e4f1405efaf3/invoke.js';
+    invokeScript.src = 'https://elegantimpose.com/4700ecea6b93a49e0ae29dfdd21b0acd/invoke.js';
     container.appendChild(invokeScript);
 
     return () => { if (container) container.innerHTML = ''; };

@@ -1,23 +1,16 @@
-import { useEffect, forwardRef } from 'react';
+import { useEffect } from 'react';
 
-export const SocialBar = forwardRef<HTMLDivElement>((_, ref) => {
+const SOCIAL_BAR_SRC =
+  'https://elegantimpose.com/bf/db/38/bfdb3856b7a0a325240de9dda540ae32.js';
+
+export function SocialBar() {
   useEffect(() => {
-    // Check if script already exists
-    const existingScript = document.querySelector('script[src*="7338e69a06a3ba20c8eb64be8062563a.js"]');
-    if (existingScript) return;
-
-    // Create the social bar script
+    if (document.querySelector(`script[src="${SOCIAL_BAR_SRC}"]`)) return;
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = 'https://elegantimpose.com/73/38/e6/7338e69a06a3ba20c8eb64be8062563a.js';
+    script.src = SOCIAL_BAR_SRC;
     document.body.appendChild(script);
-
-    return () => {
-      // Cleanup not needed for social bar as it should persist
-    };
   }, []);
 
-  return <div ref={ref} />; // Social bar renders itself via the script
-});
-
-SocialBar.displayName = 'SocialBar';
+  return null;
+}
