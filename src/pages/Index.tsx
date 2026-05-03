@@ -5,7 +5,7 @@ import { useTrendingVideos, useLatestVideos, useInfiniteVideos } from '@/hooks/u
 import { useCategories } from '@/hooks/useCategories';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
-import { TopBannerAd, StickyBottomAd, FloatingCornerAd } from '@/components/ads';
+import { TopBannerAd, StickyBottomAd } from '@/components/ads';
 import { Helmet } from 'react-helmet-async';
 import { Flame, Clock, Star, Loader2 } from 'lucide-react';
 
@@ -135,7 +135,6 @@ export default function Index() {
       </main>
 
       {/* Floating ads */}
-      <FloatingCornerAd />
       <StickyBottomAd />
     </div>
   );

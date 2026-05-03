@@ -15,7 +15,6 @@ import {
   TopBannerAd,
   NativeBannerAd,
   StickyBottomAd,
-  FloatingCornerAd,
   PopunderAd,
 } from '@/components/ads';
 import {
@@ -304,7 +303,6 @@ export default function Video() {
       </main>
 
       {/* Floating ads */}
-      <FloatingCornerAd />
       <StickyBottomAd />
 
       <ShareDialog open={shareDialogOpen} onOpenChange={setShareDialogOpen} videoId={id || ''} title={video?.title || 'VidHub Video'} />

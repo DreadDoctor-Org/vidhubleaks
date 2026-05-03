@@ -9,7 +9,7 @@ import { useCategories } from '@/hooks/useCategories';
 import { useCreateVideo } from '@/hooks/useVideos';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Code } from 'lucide-react';
+import { Loader2, Code, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AdminEmbedDialogProps {
@@ -29,6 +29,7 @@ export function AdminEmbedDialog({ open, onOpenChange }: AdminEmbedDialogProps) 
   const [categoryId, setCategoryId] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
   const [saving, setSaving] = useState(false);
+  const [thumbnailStatus, setThumbnailStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
 
   const { data: categories } = useCategories();
   const { user } = useAuth();
@@ -74,14 +75,15 @@ export function AdminEmbedDialog({ open, onOpenChange }: AdminEmbedDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px]">
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Code className="h-5 w-5" />
             Add Embed Video
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="grid gap-6 md:grid-cols-2">
+          <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="embedCode">Iframe Embed Code</Label>
             <Textarea
@@ -126,9 +128,22 @@ export function AdminEmbedDialog({ open, onOpenChange }: AdminEmbedDialogProps) 
             <Input
               id="embed-thumbnail"
               value={thumbnailUrl}
-              onChange={(e) => setThumbnailUrl(e.target.value)}
+              onChange={(e) => {
+                setThumbnailUrl(e.target.value);
+                setThumbnailStatus(e.target.value ? 'loading' : 'idle');
+              }}
               placeholder="https://example.com/thumbnail.jpg"
             />
+            {thumbnailUrl && thumbnailStatus !== 'idle' && (
+              <p className={`text-xs flex items-center gap-1 ${
+                thumbnailStatus === 'ok' ? 'text-green-500' :
+                thumbnailStatus === 'error' ? 'text-destructive' : 'text-muted-foreground'
+              }`}>
+                {thumbnailStatus === 'ok' && <><CheckCircle2 className="h-3 w-3" /> Thumbnail loaded</>}
+                {thumbnailStatus === 'error' && <><XCircle className="h-3 w-3" /> Failed to load thumbnail</>}
+                {thumbnailStatus === 'loading' && <><Loader2 className="h-3 w-3 animate-spin" /> Loading…</>}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -147,8 +162,43 @@ export function AdminEmbedDialog({ open, onOpenChange }: AdminEmbedDialogProps) 
               </SelectContent>
             </Select>
           </div>
+          </div>
 
-          <DialogFooter>
+          {/* Live preview panel */}
+          <div className="space-y-3">
+            <Label>Live Preview</Label>
+            <div className="rounded-lg border border-border bg-muted/30 overflow-hidden aspect-video">
+              {extractedUrl ? (
+                <iframe
+                  src={extractedUrl}
+                  className="w-full h-full"
+                  allowFullScreen
+                  title="Embed preview"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-sm text-muted-foreground p-4 text-center">
+                  Paste an iframe code to preview the embed
+                </div>
+              )}
+            </div>
+
+            <Label>Thumbnail Preview</Label>
+            <div className="rounded-lg border border-border bg-muted/30 overflow-hidden aspect-video flex items-center justify-center">
+              {thumbnailUrl ? (
+                <img
+                  src={thumbnailUrl}
+                  alt="Thumbnail preview"
+                  className="w-full h-full object-cover"
+                  onLoad={() => setThumbnailStatus('ok')}
+                  onError={() => setThumbnailStatus('error')}
+                />
+              ) : (
+                <span className="text-sm text-muted-foreground">No thumbnail URL provided</span>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter className="md:col-span-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
