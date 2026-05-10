@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.fetch-embed-metadata]
 verify_jwt = false
+
+[functions.thumb]
+verify_jwt = false
