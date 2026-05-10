@@ -219,6 +219,8 @@ export function AdminEmbedDialog({ open, onOpenChange }: AdminEmbedDialogProps) 
                   className="w-full h-full"
                   allowFullScreen
                   title="Embed preview"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; web-share"
+                  referrerPolicy="no-referrer-when-downgrade"
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-sm text-muted-foreground p-4 text-center">
