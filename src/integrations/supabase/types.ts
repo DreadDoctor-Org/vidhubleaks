@@ -444,6 +444,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_video_view: {
+        Args: { _user_agent?: string; _video_id: string }
+        Returns: number
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

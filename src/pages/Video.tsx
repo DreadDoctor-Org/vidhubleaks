@@ -59,7 +59,10 @@ export default function Video() {
   const recordView = async () => {
     if (!id) return;
     try {
-      await supabase.from('views').insert({ video_id: id, user_id: user?.id || null });
+      await supabase.rpc('increment_video_view' as any, {
+        _video_id: id,
+        _user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+      });
     } catch (err) {
       console.error('Error recording view:', err);
     }
