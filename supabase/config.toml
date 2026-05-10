@@ -2,3 +2,6 @@ project_id = "xdxcfhdfjpdpfqyxtnwc"
 
 [functions.hello]
 verify_jwt = false
+
+[functions.fetch-embed-metadata]
+verify_jwt = false

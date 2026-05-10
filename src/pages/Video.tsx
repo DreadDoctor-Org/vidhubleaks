@@ -194,7 +194,10 @@ export default function Video() {
               className="w-full h-full"
               frameBorder="0"
               allowFullScreen
-              allow="autoplay; fullscreen"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; web-share"
+              referrerPolicy="no-referrer-when-downgrade"
+              loading="eager"
+              title={video.title}
             />
           ) : hasVideoFile ? (
             <>
