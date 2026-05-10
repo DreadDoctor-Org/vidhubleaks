@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,11 +30,50 @@ export function AdminEmbedDialog({ open, onOpenChange }: AdminEmbedDialogProps) 
   const [thumbnailUrl, setThumbnailUrl] = useState('');
   const [saving, setSaving] = useState(false);
   const [thumbnailStatus, setThumbnailStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
+  const [fetchingMeta, setFetchingMeta] = useState(false);
+  const [autoFilled, setAutoFilled] = useState({ title: false, description: false, thumbnail: false });
 
   const { data: categories } = useCategories();
   const { user } = useAuth();
 
   const extractedUrl = extractEmbedUrl(embedCode);
+
+  // Auto-fetch metadata (title, description, thumbnail) from the embed URL
+  useEffect(() => {
+    if (!extractedUrl) return;
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      setFetchingMeta(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('fetch-embed-metadata', {
+          body: { url: extractedUrl },
+        });
+        if (cancelled || error || !data) return;
+        if (data.title && (!title || autoFilled.title)) {
+          setTitle(data.title);
+          setAutoFilled((p) => ({ ...p, title: true }));
+        }
+        if (data.description && (!description || autoFilled.description)) {
+          setDescription(data.description);
+          setAutoFilled((p) => ({ ...p, description: true }));
+        }
+        if (data.thumbnail_url && (!thumbnailUrl || autoFilled.thumbnail)) {
+          setThumbnailUrl(data.thumbnail_url);
+          setThumbnailStatus('loading');
+          setAutoFilled((p) => ({ ...p, thumbnail: true }));
+        }
+      } catch (e) {
+        console.error('Metadata fetch failed:', e);
+      } finally {
+        if (!cancelled) setFetchingMeta(false);
+      }
+    }, 600);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [extractedUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,6 +138,11 @@ export function AdminEmbedDialog({ open, onOpenChange }: AdminEmbedDialogProps) 
                 {extractedUrl ? `✓ Extracted URL: ${extractedUrl}` : '✗ Could not extract src URL from iframe code'}
               </p>
             )}
+            {fetchingMeta && (
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Loader2 className="h-3 w-3 animate-spin" /> Auto-fetching title, description and thumbnail…
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -106,7 +150,7 @@ export function AdminEmbedDialog({ open, onOpenChange }: AdminEmbedDialogProps) 
             <Input
               id="embed-title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => { setTitle(e.target.value); setAutoFilled((p) => ({ ...p, title: false })); }}
               placeholder="Video title"
               required
             />
@@ -117,7 +161,7 @@ export function AdminEmbedDialog({ open, onOpenChange }: AdminEmbedDialogProps) 
             <Textarea
               id="embed-description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => { setDescription(e.target.value); setAutoFilled((p) => ({ ...p, description: false })); }}
               placeholder="Video description"
               rows={3}
             />
@@ -131,6 +175,7 @@ export function AdminEmbedDialog({ open, onOpenChange }: AdminEmbedDialogProps) 
               onChange={(e) => {
                 setThumbnailUrl(e.target.value);
                 setThumbnailStatus(e.target.value ? 'loading' : 'idle');
+                setAutoFilled((p) => ({ ...p, thumbnail: false }));
               }}
               placeholder="https://example.com/thumbnail.jpg"
             />
