@@ -107,6 +107,21 @@ Deno.serve(async (req: Request) => {
       thumb = `${supabaseUrl}/storage/v1/object/public/${thumb.startsWith("/") ? thumb.slice(1) : thumb}`;
     }
 
+    // If thumbnail is hosted on an external domain (not our Supabase storage),
+    // route it through our proxy so social crawlers (Twitter/X, Facebook, etc.)
+    // can fetch it without being blocked by hotlink/bot protection.
+    if (thumb) {
+      try {
+        const tu = new URL(thumb);
+        const supaHost = new URL(supabaseUrl).host;
+        if (tu.host !== supaHost) {
+          thumb = `${supabaseUrl}/functions/v1/thumb?url=${encodeURIComponent(thumb)}`;
+        }
+      } catch {
+        // leave thumb as-is
+      }
+    }
+
     const title = esc(video.title || "Vid Hub Video");
     const desc = esc(
       video.description?.slice(0, 200) || "Watch this video on Vid Hub"
