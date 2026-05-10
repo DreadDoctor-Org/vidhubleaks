@@ -88,15 +88,6 @@ export default function Index() {
           </section>
         )}
 
-        {/* Trending Videos */}
-        <section aria-label="Trending videos">
-          <div className="flex items-center gap-2 mb-4">
-            <Flame className="h-5 w-5 text-destructive" />
-            <h2 className="text-xl font-bold">Trending Now</h2>
-          </div>
-          <VideoGrid videos={trendingVideos} isLoading={trendingLoading} skeletonCount={8} />
-        </section>
-
         {/* Latest Videos */}
         <section aria-label="Latest videos">
           <div className="flex items-center gap-2 mb-4">
@@ -105,6 +96,15 @@ export default function Index() {
           </div>
           <VideoGrid videos={latestVideos} isLoading={latestLoading} skeletonCount={8} />
           <BoxAd300 />
+        </section>
+
+        {/* Trending Videos */}
+        <section aria-label="Trending videos">
+          <div className="flex items-center gap-2 mb-4">
+            <Flame className="h-5 w-5 text-destructive" />
+            <h2 className="text-xl font-bold">Trending Now</h2>
+          </div>
+          <VideoGrid videos={trendingVideos} isLoading={trendingLoading} skeletonCount={8} />
         </section>
 
         {/* Recommended / Infinite Scroll */}
